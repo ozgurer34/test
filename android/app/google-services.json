@@ -1,0 +1,31 @@
+{
+  "project_info": {
+    "project_number": "185770187149",
+    "firebase_url": "https://radio-f6f9d-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "radio-f6f9d",
+    "storage_bucket": "radio-f6f9d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185770187149:android:5e46a949ff1f1a8d2905c4",
+        "android_client_info": {
+          "package_name": "com.mjizle.radio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbZJO5YaBqyX0zgzrbVe5alYnBLAGXe0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      },
+      "admob_app_id": "ca-app-pub-8418530968906083~4236634614"
+    }
+  ],
+  "configuration_version": "1"
+}
