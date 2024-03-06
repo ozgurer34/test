@@ -41,6 +41,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  async_preferences:
+    dependency: "direct main"
+    description:
+      name: async_preferences
+      sha256: "38c13248b978ca9d63befbd20e772030184ba17829f76541f15bf8a73a23374f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.0"
   auto_size_text:
     dependency: "direct main"
     description:

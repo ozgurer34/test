@@ -45,6 +45,7 @@ class _PlayerPageState extends State<PlayerPage> {
   bool timerButtonKey = true;
   bool historyButtonKey = true;
 
+
   BannerAd? _bannerAd;
   final String _adUnitId = 'ca-app-pub-8418530968906083/5921197475';
   bool _over = false;
@@ -58,6 +59,8 @@ class _PlayerPageState extends State<PlayerPage> {
   });
   int _remainingSeconds = -1;
   late Timer _timer;
+  String title3 = "";
+  String title5 = "";
   Color snoozeButtonColor = const Color(0x8A5db2ff);
 
   Future<void> getAlbumSwitchStatus() async {
@@ -83,14 +86,12 @@ class _PlayerPageState extends State<PlayerPage> {
       final Map<String, dynamic> data = json.decode(response.body);
       String newQuery = data['result']['entry'][0]['song']['entry'][0]['title'];
 
-      // Eğer query değiştiyse arama fonksiyonunu çağır
-      if (newQuery != songName) {
-        songName = newQuery;
-        print("songNamesongNamesongNamesongNamesongName......: $songName");
+      if (newQuery != title5) {
+        title5 = newQuery;
+        print("songNamesongNamesongNamesongNamesongName......: $title5");
         print("widget.stations[6].imageURL......: ${widget.stations[5].imageURL}");
-
-        saklaMetadataToSharedPreferences(songName, widget.stations[5].imageURL);
-        ara(songName);
+        saklaMetadataToSharedPreferences(title5, widget.stations[5].imageURL);
+        ara(title5);
       }
     } else {
       print('Failed to load data. Status code: ${response.statusCode}');
@@ -100,7 +101,6 @@ class _PlayerPageState extends State<PlayerPage> {
     }
   }
   Future<void> fetchOtherData() async {
-    String title="";
     if (currentIndex == 3) {
       final response = await http.get(
         Uri.parse(
@@ -111,9 +111,9 @@ class _PlayerPageState extends State<PlayerPage> {
         String targetMetadata;
         if (data.length >= 2) {
           String newQuery = data[0];
-          if (newQuery != title) {
-              title = newQuery;
-            targetMetadata = title
+          if (newQuery != title3) {
+              title3 = newQuery;
+            targetMetadata = title3
                 .replaceAll(RegExp(r'^[\d\s*_.\-]+_DUR_'), '')
                 .replaceAll(RegExp(r'\d+'), '')
                 .replaceAll(
@@ -123,7 +123,7 @@ class _PlayerPageState extends State<PlayerPage> {
                 .trim();
             songName = targetMetadata;
             saklaMetadataToSharedPreferences(
-                songName, widget.stations[5].imageURL);
+                songName, widget.stations[3].imageURL);
             ara(songName);
           }
         } else {
@@ -239,11 +239,11 @@ class _PlayerPageState extends State<PlayerPage> {
       setState(() {
         isPlaying = value;
           if (currentIndex == 5) {
-            Timer.periodic(const Duration(seconds: 10), (Timer timer) {
+            Timer.periodic(const Duration(seconds: 5), (Timer timer) {
             fetchData();
             });
           }else if(currentIndex == 3){
-            Timer.periodic(const Duration(seconds: 10), (Timer timer) {
+            Timer.periodic(const Duration(seconds: 5), (Timer timer) {
               fetchOtherData();
             });
           }
@@ -256,8 +256,6 @@ class _PlayerPageState extends State<PlayerPage> {
               (song) => song.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
       if (searchResults.isNotEmpty) {
-        //  print("Arama Sonuçları:");
-        //  print("Arama Sonuçları: ${searchResults}");
         List<String> Sonuclar = [];
         for (var result in searchResults) {
           if (result.name.toLowerCase() == query.toLowerCase()) {
@@ -956,60 +954,65 @@ class _PlayerPageState extends State<PlayerPage> {
                     ),
                   ],
                 ),
+
                 Container(
                   decoration: const BoxDecoration(
                     color: Color(0x7E000000),
                   ),
-                  width: screenWidth,
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: AutoSizeText(
-                      parca,
-                      style: GoogleFonts.getFont(
-                        'Barlow Condensed',
-                        fontSize: 20,
-                        letterSpacing: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                        .animate(target: _over ? 1 : 0)
-                        .fadeIn()
-                        .scale() // uses `Animate.defaultDuration`
-                        .slideY(duration: 600.ms),
-                  ),
-                ),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: _handleMenuButtonPressed,
-                        icon: ValueListenableBuilder<AdvancedDrawerValue>(
-                          valueListenable: _advancedDrawerController,
-                          builder: (_, value, __) {
-                            return AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 450),
-                              child: Icon(
-                                value.visible ? Icons.clear : Icons.menu,
-                                key: ValueKey<bool>(value.visible),
-                                color: Colors.grey,
-                              ),
-                            );
-                          },
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed: _handleMenuButtonPressed,
+                          icon: ValueListenableBuilder<AdvancedDrawerValue>(
+                            valueListenable: _advancedDrawerController,
+                            builder: (_, value, __) {
+                              return AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 450),
+                                child: Icon(
+                                  value.visible ? Icons.clear : Icons.menu,
+                                  key: ValueKey<bool>(value.visible),
+                                  color: Colors.grey,
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 18,
-                        height: 15,
-                        child: (isPlaying)
-                            ? const MiniMusicVisualizer(
-                                color: Colors.blueAccent,
-                                width: 4,
-                                height: 15,
-                              )
-                            : const Text(""),
-                      ),
-                    ]),
+                        // parca
+                        Container(
+                          width: screenWidth-70,
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: AutoSizeText(
+                              parca,
+                              style: GoogleFonts.getFont(
+                                'Barlow Condensed',
+                                fontSize: 20,
+                                letterSpacing: 1,
+                                color: Colors.white,
+                              ),
+                              maxLines: 1,
+                            )
+                                .animate(target: _over ? 1 : 0)
+                                .fadeIn()
+                                .scale() // uses `Animate.defaultDuration`
+                                .slideY(duration: 600.ms),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 18,
+                          height: 15,
+                          child: (isPlaying)
+                              ? const MiniMusicVisualizer(
+                                  color: Colors.blueAccent,
+                                  width: 4,
+                                  height: 15,
+                                )
+                              : const Text(""),
+                        ),
+                      ]),
+                ),
                 // const Spacer(),
                 Expanded(
                   child: Container(
@@ -1064,7 +1067,6 @@ class _PlayerPageState extends State<PlayerPage> {
                     ),
                   ),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Container(
@@ -1142,118 +1144,120 @@ class _PlayerPageState extends State<PlayerPage> {
                     ),
                   ),
                 ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Visibility(
-                      visible: historyButtonKey,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-                        child: Container(
-                          height: 42,
-                          width: 42,
-                          decoration: const BoxDecoration(
-                            color: Color(0x8A000000),
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.format_list_bulleted,
-                              size: 25,
-                              color: Color(0x8A5db2ff),
+                Visibility(
+                  visible: !(historyButtonKey == false && timerButtonKey == false && videoButtonKey == false),
+                  child: Row(   //historyButtonKey timerButtonKey videoButtonKey
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Visibility(
+                        visible: historyButtonKey,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+                          child: Container(
+                            height: 42,
+                            width: 42,
+                            decoration: const BoxDecoration(
+                              color: Color(0x8A000000),
+                              shape: BoxShape.circle,
                             ),
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const MetadataPage()));
-                            },
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.format_list_bulleted,
+                                size: 25,
+                                color: Color(0x8A5db2ff),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const MetadataPage()));
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Visibility(
-                      visible: timerButtonKey,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-                        child: Container(
-                          height: 42,
-                          width: 42,
-                          decoration: const BoxDecoration(
-                            color: Color(0x8A000000),
-                            shape: BoxShape.circle,
-                          ),
-                          child: InkWell(
-                            onTap: () {
-                              if (_remainingSeconds == -1 ||
-                                  _remainingSeconds == 0) {
-                                setState(() {
-                                  _showTimerDialog();
-                                });
-                              } else {
-                                setState(() {
-                                  _remainingSeconds = -1;
-                                });
-                              }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.snooze,
-                                size: 25,
-                                color: (_remainingSeconds == -1 ||
-                                        _remainingSeconds == 0)
-                                    ? const Color(0x8A5db2ff)
-                                    : Colors.red,
+                      Visibility(
+                        visible: timerButtonKey,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+                          child: Container(
+                            height: 42,
+                            width: 42,
+                            decoration: const BoxDecoration(
+                              color: Color(0x8A000000),
+                              shape: BoxShape.circle,
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                if (_remainingSeconds == -1 ||
+                                    _remainingSeconds == 0) {
+                                  setState(() {
+                                    _showTimerDialog();
+                                  });
+                                } else {
+                                  setState(() {
+                                    _remainingSeconds = -1;
+                                  });
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.snooze,
+                                  size: 25,
+                                  color: (_remainingSeconds == -1 ||
+                                          _remainingSeconds == 0)
+                                      ? const Color(0x8A5db2ff)
+                                      : Colors.red,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    (_remainingSeconds != -1)
-                        ? SizedBox(
-                            width: 60,
-                            child: Text('$_remainingSeconds sn',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                )),
-                          )
-                        : const SizedBox(width: 30, child: Text('    ')),
+                      (_remainingSeconds != -1)
+                          ? SizedBox(
+                              width: 60,
+                              child: Text('$_remainingSeconds sn',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  )),
+                            )
+                          : const SizedBox(width: 30, child: Text('    ')),
 
-                    // const SizedBox(width: 20,),
-                    Visibility(
-                      visible: videoButtonKey,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-                        child: Container(
-                          height: 42,
-                          width: 42,
-                          decoration: const BoxDecoration(
-                            color: Color(0x8A000000),
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.movie,
-                              size: 25,
-                              color: Color(0x8A5db2ff),
+                      // const SizedBox(width: 20,),
+                      Visibility(
+                        visible: videoButtonKey,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+                          child: Container(
+                            height: 42,
+                            width: 42,
+                            decoration: const BoxDecoration(
+                              color: Color(0x8A000000),
+                              shape: BoxShape.circle,
                             ),
-                            onPressed: () {
-                              /*
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const Video()));
-                              */
-                            },
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.movie,
+                                size: 25,
+                                color: Color(0x8A5db2ff),
+                              ),
+                              onPressed: () {
+                                /*
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Video()));
+                                */
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Column(
                   children: [

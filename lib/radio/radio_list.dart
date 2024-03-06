@@ -3,6 +3,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:radio/radio/settings_screen.dart';
 import 'metadata.dart';
 import 'player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,31 +44,33 @@ class _RadioListState extends State<RadioList> {
   }
 
   void loadFavoriteStations() {
-    if (prefs != null) {
-      final List<String>? favoriteStationsList =
-      prefs!.getStringList('favoriteStations');
+      if (prefs != null) {
+        final List<String>? favoriteStationsList =
+        prefs!.getStringList('favoriteStations');
 
-      if (favoriteStationsList != null && favoriteStationsList.isNotEmpty) {
-        for (String stationNumber in favoriteStationsList) {
-          final int index =
-          stations.indexWhere((station) => station.number == stationNumber);
-          if (index != -1 && index < stations.length) {
-            setState(() {
-              stations[index].isFavorite = true;
-            });
+        if (favoriteStationsList != null && favoriteStationsList.isNotEmpty) {
+          for (String stationNumber in favoriteStationsList) {
+            final int index =
+            stations.indexWhere((station) => station.number == stationNumber);
+            if (index != -1 && index < stations.length) {
+              setState(() {
+                stations[index].isFavorite = true;
+              });
+            }
           }
-        }
 // Favori istasyonlar listesi boş değilse uyarıyı kapat
-        setState(() {
-          showEmptyListWarning = false;
-        });
-      } else {
+          setState(() {
+            showEmptyListWarning = false;
+          });
+        } else {
 // Favori istasyonlar listesi boşsa uyarıyı göster
-        setState(() {
-          showEmptyListWarning = true;
-        });
+          setState(() {
+            showEmptyListWarning = true;
+          });
+        }
       }
-    }
+
+
   }
 
   Widget buildEmptyListWarning() {
@@ -167,7 +171,8 @@ class _RadioListState extends State<RadioList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return
+    Scaffold(
       appBar: AppBar(
         title: const Text(
           'Radio List',
@@ -175,6 +180,27 @@ class _RadioListState extends State<RadioList> {
             color: Colors.grey,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.bug_report_outlined,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              ConsentInformation.instance.reset();
+            }
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.settings,
+              color: Colors.white,
+            ),
+            onPressed: ()=> Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const SettingsScreen(),
+              ),
+            ),
+          ),
+        ],
 
         backgroundColor: const Color(0xff0c0c0c),
       ),
@@ -374,3 +400,4 @@ class RadioStation {
     );
   }
 }
+

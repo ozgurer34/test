@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/services.dart';
+import 'initialize_screen.dart';
 
 FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 void main() async {
@@ -43,13 +44,15 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-        home: Scaffold(
+        home:InitializeScreen(targetWidget:
+        Scaffold(
             body: Stack(
                   children: [
                     RadioList(),
                   ],
                 ),
             ),
+        ),
     );
   }
 }
