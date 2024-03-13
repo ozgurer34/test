@@ -4,10 +4,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:radio/radio/settings_screen.dart';
+import 'package:radio/settings_screen.dart';
+import 'initialize_screen.dart';
 import 'metadata.dart';
 import 'player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 class RadioList extends StatefulWidget {
   const RadioList({Key? key}) : super(key: key);
@@ -172,160 +174,162 @@ class _RadioListState extends State<RadioList> {
   @override
   Widget build(BuildContext context) {
     return
-    Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Radio List',
-          style: TextStyle(
-            color: Colors.grey,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.bug_report_outlined,
-              color: Colors.white,
+      InitializeScreen(targetWidget: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Radio List',
+            style: TextStyle(
+              color: Colors.grey,
             ),
-            onPressed: () {
-              ConsentInformation.instance.reset();
-            }
           ),
-          IconButton(
-            icon: const Icon(
-              Icons.settings,
-              color: Colors.white,
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.bug_report_outlined,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                print("Onayı resetle");
+                ConsentInformation.instance.reset();
+              }
             ),
-            onPressed: ()=> Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const SettingsScreen(),
+            IconButton(
+              icon: const Icon(
+                Icons.settings,
+                color: Colors.white,
+              ),
+              onPressed: ()=> Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const SettingsScreen(),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
 
-        backgroundColor: const Color(0xff0c0c0c),
-      ),
-      backgroundColor: const Color(0xff0c0c0c),
-      body: Container(
-        decoration: const BoxDecoration(
-          color: Color(0x8A000000),
-          image: DecorationImage(
-            image: AssetImage('assets/list_bg.jpg'),
-            fit: BoxFit.fill,
-          ),
+          backgroundColor: const Color(0xff0c0c0c),
         ),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: stations.length,
-                itemBuilder: (context, index) {
-                  return Column(children: [
-                    const SizedBox(height: 5),
-                    Card(
-                      color: Colors.grey[200],
-                      child: ListTile(
-                        leading: SizedBox(
-                          width: 50,
-                          child: Image.network(
-                            stations[index].imageURL,
+        backgroundColor: const Color(0xff0c0c0c),
+        body: Container(
+          decoration: const BoxDecoration(
+            color: Color(0x8A000000),
+            image: DecorationImage(
+              image: AssetImage('assets/list_bg.jpg'),
+              fit: BoxFit.fill,
+            ),
+          ),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: stations.length,
+                  itemBuilder: (context, index) {
+                    return Column(children: [
+                      const SizedBox(height: 5),
+                      Card(
+                        color: Colors.grey[200],
+                        child: ListTile(
+                          leading: SizedBox(
                             width: 50,
-                            height: 50,
+                            child: Image.network(
+                              stations[index].imageURL,
+                              width: 50,
+                              height: 50,
+                            ),
                           ),
-                        ),
-                        title: Text(
-                          stations[index].name,
-                          style: const TextStyle(
-                              fontSize: 15, color: Colors.white),
-                        ),
-                        tileColor: index % 2 == 0
-                            ? const Color(0xff000000)
-                            : const Color(0xff070808),
-                        subtitle: Text(
-                          stations[index].desc,
-                          style:
-                          const TextStyle(fontSize: 9, color: Colors.white),
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(
-                            stations[index].isFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border_outlined,
-                            size: 30,
-                            color: stations[index].isFavorite
-                                ? Colors.red
-                                : Colors.grey,
+                          title: Text(
+                            stations[index].name,
+                            style: const TextStyle(
+                                fontSize: 15, color: Colors.white),
                           ),
-                          onPressed: () {
-                            setState(() {
-                              stations[index].isFavorite = !stations[index].isFavorite;
-                              saveFavoriteStations();
-                              loadFavoriteStations();
-                            });
+                          tileColor: index % 2 == 0
+                              ? const Color(0xff000000)
+                              : const Color(0xff070808),
+                          subtitle: Text(
+                            stations[index].desc,
+                            style:
+                            const TextStyle(fontSize: 9, color: Colors.white),
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(
+                              stations[index].isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border_outlined,
+                              size: 30,
+                              color: stations[index].isFavorite
+                                  ? Colors.red
+                                  : Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                stations[index].isFavorite = !stations[index].isFavorite;
+                                saveFavoriteStations();
+                                loadFavoriteStations();
+                              });
+                            },
+                          ),
+                          onTap: () {
+                            if (stations[index].isFavorite) {
+                              int currentIndex = stations
+                                  .where((station) => station.isFavorite)
+                                  .toList()
+                                  .indexWhere((station) =>
+                              station.number == stations[index].number);
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PlayerPage(
+                                    stations: stations
+                                        .where((station) => station.isFavorite)
+                                        .toList(),
+                                    songs: songs,
+                                    currentIndex: currentIndex,
+                                  ),
+                                ),
+                              );
+                            }
                           },
                         ),
-                        onTap: () {
-                          if (stations[index].isFavorite) {
-                            int currentIndex = stations
-                                .where((station) => station.isFavorite)
-                                .toList()
-                                .indexWhere((station) =>
-                            station.number == stations[index].number);
-
-                            Navigator.push(
+                      ),
+                      const SizedBox(height: 5),
+                    ]);
+                  },
+                ),
+              ),
+              buildEmptyListWarning(),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+                    child: Container(
+                      height: 42,
+                      width: 42,
+                      decoration: const BoxDecoration(
+                        color: Color(0x8A000000),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.format_list_bulleted,
+                          size: 25,
+                          color: Color(0x8A5db2ff),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => PlayerPage(
-                                  stations: stations
-                                      .where((station) => station.isFavorite)
-                                      .toList(),
-                                  songs: songs,
-                                  currentIndex: currentIndex,
-                                ),
-                              ),
-                            );
-                          }
+                                  builder: (context) =>
+                                  const MetadataPage()));
                         },
                       ),
                     ),
-                    const SizedBox(height: 5),
-                  ]);
-                },
-              ),
-            ),
-            buildEmptyListWarning(),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-                  child: Container(
-                    height: 42,
-                    width: 42,
-                    decoration: const BoxDecoration(
-                      color: Color(0x8A000000),
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.format_list_bulleted,
-                        size: 25,
-                        color: Color(0x8A5db2ff),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const MetadataPage()));
-                      },
-                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-          ],
+                ],
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );

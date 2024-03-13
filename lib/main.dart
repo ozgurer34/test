@@ -1,7 +1,7 @@
 //main.dart
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:radio/radio/radio_list.dart';
+import 'package:radio/radio_list.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-        home:InitializeScreen(targetWidget:
+        home:
         Scaffold(
             body: Stack(
                   children: [
@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
                   ],
                 ),
             ),
-        ),
+
     );
   }
 }
